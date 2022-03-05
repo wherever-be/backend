@@ -37,8 +37,8 @@ python-versions = ">=3.6"
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.9,<3.10"
-content-hash = "62a2de4fb26bfa8b1b3969494a0a008ec36a3d80988a43dbf5887874ae0f3076"
+python-versions = "~3.8"
+content-hash = "20488b80af492e755c00a5c701d7834b03f9a05f5c6acace2d4f8db34db100bf"
 
 [metadata.files]
 beautifulsoup4 = [
