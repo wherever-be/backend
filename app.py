@@ -14,7 +14,7 @@ def index():
         "searchResults": [
             {
                 "id": random.randint(1024, 999999),
-                "destination": random.choice(["Brussels", "Berlin"]),
+                "destination": random.choice(["STOCKHOLM", "KRAKOW", "ROME"]),
                 "goodness": random.uniform(-100, 100),
                 "journeys": [
                     {
