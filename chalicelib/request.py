@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import timedelta
-from functools import cached_property, lru_cache
+from functools import cached_property
 from typing import List
 
 from chalicelib.geography import City
-from chalicelib.scraper import list_countries, search_flights
+from chalicelib.scraper import list_countries, rough_connection
 from .friend import Friend
 from .journey import Journey
 from .time_frame import TimeFrame
@@ -19,17 +19,15 @@ class Request:
     friends: List[Friend]
 
     @cached_property
-    def trips(self) -> List[Trip]:
+    def rough_trips(self) -> List[Trip]:
         return [
             Trip.combine_journeys(
                 destination=destination,
                 journeys=[
-                    list(
-                        self.journeys(
-                            friend=friend,
-                            trip_dates=trip_dates,
-                            destination=destination,
-                        )
+                    self.journeys(
+                        friend=friend,
+                        trip_dates=trip_dates,
+                        destination=destination,
                     )
                     for friend in self.friends
                 ],
@@ -38,28 +36,23 @@ class Request:
             for destination in self.destination_cities
         ]
 
-    @lru_cache()
-    def journeys(self, friend: Friend, trip_dates: TimeFrame, destination: City):
+    def rough_journeys(self, friend: Friend, trip_dates: TimeFrame, destination: City):
         return [
             Journey(
                 friend=friend,
-                home_to_destination=home_to_destination,
-                destination_to_home=destination_to_home,
+                home_to_destination=rough_connection(
+                    origin=home_airport,
+                    destination=destination_airport,
+                    flight_date=trip_dates.start_date,
+                ),
+                destination_to_home=rough_connection(
+                    origin=destination_airport,
+                    destination=home_airport,
+                    flight_date=trip_dates.end_date,
+                ),
             )
             for home_airport in friend.city.airports
             for destination_airport in destination.airports
-            for home_to_destination in search_flights(
-                num_people=1,
-                flight_date=trip_dates.start_date,
-                origin_iata=home_airport.iata,
-                destination_iata=destination_airport.iata,
-            )
-            for destination_to_home in search_flights(
-                num_people=1,
-                flight_date=trip_dates.end_date,
-                origin_iata=destination_airport.iata,
-                destination_iata=home_airport.iata,
-            )
         ]
 
     @property

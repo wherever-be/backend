@@ -1,2 +1,3 @@
 from .geography import list_countries
-from .search_flights import search_flights
+from .precise_connections import precise_connections
+from .rough_connection import rough_connection

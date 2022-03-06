@@ -3,14 +3,16 @@ from datetime import date, datetime
 from typing import List
 
 from chalicelib.connection import Connection
+from chalicelib.geography import Airport
 from chalicelib.price import Price
 from .ryanair import make_request, RyanairAPIError
 
 
-@cached(cache=TTLCache(maxsize=10 * 250 * 150, ttl=24 * 60 * 60))
-def search_flights(
-    num_people: int, flight_date: date, origin_iata: str, destination_iata: str
+@cached(cache=TTLCache(maxsize=65536, ttl=24 * 60 * 60))
+def precise_connections(
+    num_people: int, flight_date: date, origin: Airport, destination: Airport
 ) -> List[Connection]:
+    """All connections on a given day, with exact prices"""
     try:
         response = make_request(
             "https://www.ryanair.com/api/booking/v4/en-gb/availability",
@@ -21,8 +23,8 @@ def search_flights(
                 INF=0,  # number of <2 year olds
                 DateIn="",  # empty for one-way
                 DateOut=flight_date.isoformat(),
-                Origin=origin_iata,
-                Destination=destination_iata,
+                Origin=origin.iata,
+                Destination=destination.iata,
                 Disc=0,  # no idea what this is
                 promoCode="",
                 IncludeConnectingFlights=False,
@@ -38,9 +40,9 @@ def search_flights(
     flights = response["trips"][0]["dates"][0]["flights"]
     return [
         Connection(
-            from_airport=origin_iata,
+            from_airport=origin,
             departure=datetime.fromisoformat(flight["segments"][0]["time"][0]),
-            to_airport=destination_iata,
+            to_airport=destination,
             arrival=datetime.fromisoformat(flight["segments"][-1]["time"][-1]),
             price=Price(
                 amount=flight["regularFare"]["fares"][0]["amount"],
