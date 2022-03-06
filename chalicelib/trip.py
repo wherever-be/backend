@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import cached_property, reduce
 from typing import Generator, List
 
 from chalicelib.geography import City
@@ -26,3 +27,13 @@ class Trip:
                     destination=destination,
                     journeys=[journey] + other_journeys.journeys,
                 )
+
+    @cached_property
+    def goodness(self):
+        return -self.total_price.amount
+
+    @cached_property
+    def total_price(self):
+        return reduce(
+            lambda a, b: a + b, (journey.total_price for journey in self.journeys)
+        )

@@ -11,3 +11,10 @@ class Journey:
     friend: Friend
     home_to_destination: Connection
     destination_to_home: Connection
+
+    @property
+    def total_price(self):
+        return (
+            self.home_to_destination.price.in_euro
+            + self.destination_to_home.price.in_euro
+        )
