@@ -13,7 +13,7 @@ def index():
     return {
         "searchResults": [
             {
-                "id": "0xdeadbeef",
+                "id": random.randint(1024, 999999),
                 "destination": random.choice(["Brussels", "Berlin"]),
                 "goodness": random.uniform(-100, 100),
                 "journeys": [
