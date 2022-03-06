@@ -10,4 +10,4 @@ def index():
     request_data = app.current_request.json_body
     request = Request.from_frontend_json(request_data)
     response = request.response
-    return response.for_frontend
+    return response.frontend_json

@@ -10,11 +10,14 @@ class Price:
 
     @property
     def in_euro(self) -> "Price":
+        if self.currency == "EUR":
+            return self
         return Price(amount=self.amount / eur_rate(self.currency), currency="EUR")
 
     @property
-    def for_frontend(self):
-        return {"amount": self.amount, "unit": self.currency}
+    def frontend_json(self):
+        in_euro = self.in_euro
+        return {"amount": in_euro.amount, "currency": in_euro.currency}
 
     def __add__(self, other: "Price") -> "Price":
         assert self.currency == other.currency

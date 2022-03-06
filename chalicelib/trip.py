@@ -30,12 +30,12 @@ class Trip:
                 )
 
     @property
-    def for_frontend(self):
+    def frontend_json(self):
         return {
-            "id": hash(self),
+            "id": id(self),
             "destination": self.destination.code,
             "goodness": self.goodness,
-            "journeys": [journey.for_frontend for journey in self.journeys],
+            "journeys": [journey.frontend_json for journey in self.journeys],
         }
 
     @cached_property

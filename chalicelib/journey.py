@@ -13,12 +13,12 @@ class Journey:
     destination_to_home: Connection
 
     @property
-    def for_frontend(self):
+    def frontend_json(self):
         return {
             "friendName": self.friend.name,
             "staysHome": False,  # TODO: consider staying home
-            "homeToDest": self.home_to_destination.for_frontend,
-            "destToHome": self.destination_to_home.for_frontend,
+            "homeToDest": self.home_to_destination.frontend_json,
+            "destToHome": self.destination_to_home.frontend_json,
         }
 
     @property

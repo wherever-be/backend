@@ -14,7 +14,7 @@ class Connection:
     price: Price
 
     @property
-    def for_frontend(self):
+    def frontend_json(self):
         return {
             "departure": {
                 "date": self.departure.isoformat(),
@@ -24,6 +24,6 @@ class Connection:
                 "date": self.arrival.isoformat(),
                 "port": self.to_airport.iata,
             },
-            "price": self.price.for_frontend,
+            "price": self.price.frontend_json,
             "bookingLink": f"https://www.ryanair.com/lv/en/trip/flights/select?adults=1&teens=0&children=0&infants=0&dateOut={self.departure.date().isoformat()}&dateIn=&isConnectedFlight=false&isReturn=false&discount=0&promoCode=&originIata={self.from_airport.iata}&destinationIata={self.to_airport.iata}",
         }

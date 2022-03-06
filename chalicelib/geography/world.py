@@ -20,3 +20,12 @@ class World:
             for city in country.cities
             if city.code == code
         )
+
+    def airport_by_iata(self, iata: str):
+        return next(
+            airport
+            for country in self.countries
+            for city in country.cities
+            for airport in city.airports
+            if airport.iata == iata
+        )
