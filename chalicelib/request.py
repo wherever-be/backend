@@ -4,9 +4,10 @@ from functools import cached_property
 from typing import List, Union
 
 from chalicelib.geography import City, Country
-from chalicelib.scraper import list_countries, rough_connection
+from chalicelib.scraper import rough_connection, world
 from .friend import Friend
 from .journey import Journey
+from .response import Response
 from .time_frame import TimeFrame
 from .trip import Trip
 
@@ -20,7 +21,32 @@ class Request:
     destination_country: Union[Country, None]
     destination_city: Union[City, None]
 
+    @classmethod
+    def from_frontend_json(cls, json):
+        return cls(
+            time_frame=TimeFrame.from_frontend_json(json["timeFrame"]),
+            min_days=json["durationRange"]["min"],
+            max_days=json["durationRange"]["max"],
+            friends=[
+                Friend.from_frontend_json(friend_json)
+                for friend_json in json["friends"]
+            ],
+            destination_country=(
+                world().country_by_code(json["destination"]["country"])
+                if "country" in json["destination"]
+                else None
+            ),
+            destination_city=(
+                world().city_by_code(json["destination"]["city"])
+                if "city" in json["destination"]
+                else None
+            ),
+        )
+
     @cached_property
+    def response(self):
+        return Response(trips=self.rough_trips)
+
     def rough_trips(self) -> List[Trip]:
         return [
             Trip.combine_journeys(
@@ -76,7 +102,7 @@ class Request:
         countries = (
             [self.destination_country]
             if self.destination_country is not None
-            else list_countries()
+            else world().countries
         )
         for country in countries:
             for city in country.cities:
