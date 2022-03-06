@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 
 
 @dataclass(frozen=True)
@@ -13,3 +13,11 @@ class TimeFrame:
             start_date=date.fromisoformat(json["start"]),
             end_date=date.fromisoformat(json["end"]),
         )
+
+    def __iter__(self):
+        current_date = self.start_date
+        while True:
+            if current_date > self.end_date:
+                return
+            yield current_date
+            current_date = current_date + timedelta(days=1)

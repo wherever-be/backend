@@ -47,12 +47,13 @@ class Request:
     def response(self):
         return Response(trips=self.rough_trips)
 
+    @property
     def rough_trips(self) -> List[Trip]:
         return [
             Trip.combine_journeys(
                 destination=destination,
                 journeys=[
-                    self.journeys(
+                    self.rough_journeys(
                         friend=friend,
                         trip_dates=trip_dates,
                         destination=destination,
@@ -95,6 +96,7 @@ class Request:
                     end_date=end_date,
                 )
 
+    @property
     def destination_cities(self):
         if self.destination_city is not None:
             yield self.destination_city
