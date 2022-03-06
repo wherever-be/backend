@@ -6,7 +6,7 @@ import random
 app = Chalice(app_name="backend")
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["POST"], cors=True)
 def index():
     request_data = app.current_request.json_body
     time.sleep(1)
