@@ -28,6 +28,15 @@ class Trip:
                     journeys=[journey] + other_journeys.journeys,
                 )
 
+    @property
+    def for_frontend(self):
+        return {
+            "id": hash(self),
+            "destination": self.destination.code,
+            "goodness": self.goodness,
+            "journeys": [journey.for_frontend for journey in self.journeys],
+        }
+
     @cached_property
     def goodness(self):
         return -self.total_price.amount
