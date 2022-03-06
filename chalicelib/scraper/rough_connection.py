@@ -46,7 +46,7 @@ def _rough_connections_dict(
             arrival=datetime.fromisoformat(fare["arrivalDate"]),
             price=Price(
                 amount=fare["price"]["value"],
-                currency=response["currencyCode"],
+                currency=fare["price"]["currencyCode"],
             ),
         )
         for fare in response["outbound"]["fares"]
