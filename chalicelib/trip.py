@@ -18,6 +18,7 @@ class Trip:
         cls, destination: City, journeys: List[List[Journey]]
     ) -> Generator["Trip", None, None]:
         if len(journeys) == 0:
+            yield cls(destination=destination, journeys=[])
             return
         for other_journeys in cls.combine_journeys(
             destination=destination, journeys=journeys[1:]

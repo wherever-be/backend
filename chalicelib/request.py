@@ -50,16 +50,18 @@ class Request:
     @property
     def rough_trips(self) -> List[Trip]:
         return [
-            Trip.combine_journeys(
-                destination=destination,
-                journeys=[
-                    self.rough_journeys(
-                        friend=friend,
-                        trip_dates=trip_dates,
-                        destination=destination,
-                    )
-                    for friend in self.friends
-                ],
+            list(
+                Trip.combine_journeys(
+                    destination=destination,
+                    journeys=[
+                        self.rough_journeys(
+                            friend=friend,
+                            trip_dates=trip_dates,
+                            destination=destination,
+                        )
+                        for friend in self.friends
+                    ],
+                )
             )
             for trip_dates in self.trip_dates
             for destination in self.destination_cities
