@@ -95,6 +95,14 @@ urllib3 = ">=1.25.4,<1.27"
 crt = ["awscrt (==0.12.5)"]
 
 [[package]]
+name = "cachetools"
+version = "5.0.0"
+description = "Extensible memoizing collections and decorators"
+category = "main"
+optional = false
+python-versions = "~=3.7"
+
+[[package]]
 name = "certifi"
 version = "2021.10.8"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -416,7 +424,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "8be13f88cc02778c7d80502ea450f9bc56bdc9a1f2f38d7055947138de5857ee"
+content-hash = "949d3db159db7d9a692e90bd754e4bdc366ec1034ab6761ce3e983a2656c6ef7"
 
 [metadata.files]
 ansicon = [
@@ -467,6 +475,10 @@ blessed = [
 botocore = [
     {file = "botocore-1.24.13-py3-none-any.whl", hash = "sha256:7b166096f9413b41caf7cc6f4edfd5b3c3ab9d7c61eb120a649e69485c98131a"},
     {file = "botocore-1.24.13.tar.gz", hash = "sha256:46e51f56f1c5784e4245e036503635fa71b722775657b6e1acf21ec5b906974c"},
+]
+cachetools = [
+    {file = "cachetools-5.0.0-py3-none-any.whl", hash = "sha256:8fecd4203a38af17928be7b90689d8083603073622229ca7077b72d8e5a976e4"},
+    {file = "cachetools-5.0.0.tar.gz", hash = "sha256:486471dfa8799eb7ec503a8059e263db000cdda20075ce5e48903087f79d5fd6"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},

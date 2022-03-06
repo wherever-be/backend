@@ -1,9 +1,11 @@
+from cachetools import cached, TTLCache
 from typing import List
 
 from chalicelib.geography import Country, City, Airport
 from .ryanair import make_request
 
 
+@cached(cache=TTLCache(maxsize=1, ttl=24 * 60 * 60))
 def list_countries() -> List[Country]:
     response = make_request(
         "https://www.ryanair.com/api/locate/v1/autocomplete/airports",

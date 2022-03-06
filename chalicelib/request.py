@@ -1,78 +1,80 @@
-from datetime import timedelta
-from functools import cache, cached_property
-from typing import Dict, List, Tuple
 from dataclasses import dataclass
-from urllib import response
-from chalicelib.journey import Journey
-from chalicelib.scraper.search_parameters import SearchParameters
-from chalicelib.timeframe import TimeFrame
-from .connection import Connection
-from scraper.ryanair import search
+from datetime import timedelta
+from functools import cached_property, lru_cache
+from typing import List
+
+from chalicelib.geography import City
+from chalicelib.scraper import list_countries, search_flights
+from .friend import Friend
+from .journey import Journey
+from .time_frame import TimeFrame
+from .trip import Trip
 
 
 @dataclass(frozen=True)
 class Request:
-    timerange: TimeFrame
-    duration_days: Tuple(int, int)  # number of days (min,max)
-    origin_cities: List[str]
+    time_frame: TimeFrame
+    min_days: int
+    max_days: int
+    friends: List[Friend]
 
     @cached_property
-    def trip_dates(self) -> List[TimeFrame]:
-        dates = []
-        for i in range(self.duration_days[0], self.duration_days[1]):
-            start = self.timerange.get_startdate()
-            end = start + timedelta(days=i)
-
-            while end < self.timerange.get_enddate():
-                dates.append(TimeFrame(start=start, end=end))
-                start = start + timedelta(days=1)
-                end = start + timedelta(days=i)
-        return dates
-
-    @cached_property
-    def airports(self) -> Dict:
-        # call scraper for mapping (city:str,airports:str[])
-        None
-
-    @cache
-    def city_connections(self, city: str) -> List[Connection]:
-        """fetch all possible journeys from 'city:str'"""
-        journeys = []
-        # for city_from in self.origin_cities:
-        for iata_from in self.airports[city]:
-            for timeframe in self.tripdates:
-                for city_to in self.airports.keys:
-                    for iata_to in self.airports[city_to]:
-                        par_to = SearchParameters(
-                            num_people=len(self.origin_cities),
-                            flight_date=timeframe.get_startdate(),
-                            origin_iata=iata_from,
-                            destination_iata=iata_to,
+    def trips(self) -> List[Trip]:
+        return [
+            Trip.combine_journeys(
+                destination=destination,
+                journeys=[
+                    list(
+                        self.journeys(
+                            friend=friend,
+                            trip_dates=trip_dates,
+                            destination=destination,
                         )
-                        flights_to = search(par_to)
+                    )
+                    for friend in self.friends
+                ],
+            )
+            for trip_dates in self.trip_dates
+            for destination in self.destination_cities
+        ]
 
-                        par_from = SearchParameters(
-                            num_people=len(self.origin_cities),
-                            flight_date=timeframe.get_startdate(),
-                            origin_iata=iata_from,
-                            destination_iata=iata_to,
-                        )
-                        flights_from = search(par_from)
-                        for towards in flights_to:
-                            journeys += [
-                                Journey(
-                                    start_connection=towards, end_connection=backwards
-                                )
-                                for backwards in flights_from
-                            ]
+    @lru_cache()
+    def journeys(self, friend: Friend, trip_dates: TimeFrame, destination: City):
+        return [
+            Journey(
+                friend=friend,
+                home_to_destination=home_to_destination,
+                destination_to_home=destination_to_home,
+            )
+            for home_airport in friend.city.airports
+            for destination_airport in destination.airports
+            for home_to_destination in search_flights(
+                num_people=1,
+                flight_date=trip_dates.start_date,
+                origin_iata=home_airport.iata,
+                destination_iata=destination_airport.iata,
+            )
+            for destination_to_home in search_flights(
+                num_people=1,
+                flight_date=trip_dates.end_date,
+                origin_iata=destination_airport.iata,
+                destination_iata=home_airport.iata,
+            )
+        ]
 
-    def find_overlap(self):
-        connections_per_city = {
-            city: self.city_connections(city) for city in self.origin_cities
-        }
+    @property
+    def trip_dates(self):
+        for start_date in self.time_frame:
+            for duration_days in range(self.min_days, self.max_days + 1):
+                end_date = start_date + timedelta(days=duration_days)
+                if end_date > self.time_frame.end_date:
+                    break
+                yield TimeFrame(
+                    start_date=start_date,
+                    end_date=end_date,
+                )
 
-        for i in range(len(self.origin_cities)):
-            for j in range(i + 1, len(self.origin_cities)):
-                city_i = connections_per_city.keys[i]
-                city_j = connections_per_city.keys[j]
-                # l = [c for c in connections_per_city[city_i] if [temp.to_airport for temp in connections_per_city[city_j]]
+    def destination_cities(self):
+        for country in list_countries():
+            for city in country.cities:
+                yield city

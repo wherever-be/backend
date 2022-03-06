@@ -1,9 +1,13 @@
 from dataclasses import dataclass
 
-from chalicelib.connection import Connection
+from .connection import Connection
+from .friend import Friend
 
 
 @dataclass(frozen=True)
 class Journey:
-    start_connection: Connection
-    end_connection: Connection
+    """A single person's travels to and from the destination"""
+
+    friend: Friend
+    home_to_destination: Connection
+    destination_to_home: Connection

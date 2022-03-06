@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from cachetools import cached, TTLCache
 from datetime import date, datetime
 from typing import List
 
@@ -7,6 +7,7 @@ from chalicelib.price import Price
 from .ryanair import make_request, RyanairAPIError
 
 
+@cached(cache=TTLCache(maxsize=10 * 250 * 150, ttl=24 * 60 * 60))
 def search_flights(
     num_people: int, flight_date: date, origin_iata: str, destination_iata: str
 ) -> List[Connection]:
