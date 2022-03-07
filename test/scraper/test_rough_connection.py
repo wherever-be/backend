@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
-from chalicelib.geography import Airport
-from chalicelib.scraper import rough_connections
+from backend.geography import Airport
+from backend.scraper import rough_connections
 
 
 def test_krakow_eindhoven():

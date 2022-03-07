@@ -1,6 +1,6 @@
 import pytest
 
-from chalicelib.scraper.world import world
+from backend.scraper.world import world
 
 
 def test_known_countries():

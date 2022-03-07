@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from chalicelib import Response
-from chalicelib.connection import Connection
-from chalicelib.friend import Friend
-from chalicelib.journey import Journey
-from chalicelib.price import Price
-from chalicelib.scraper import world
-from chalicelib.trip import Trip
+from backend import Response
+from backend.connection import Connection
+from backend.friend import Friend
+from backend.journey import Journey
+from backend.price import Price
+from backend.scraper import world
+from backend.trip import Trip
 
 
 def test_to_frontend_json():

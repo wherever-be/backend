@@ -1,7 +1,7 @@
 from cachetools import cached, TTLCache
 from typing import List
 
-from chalicelib.geography import Airport, City, Country, World
+from backend.geography import Airport, City, Country, World
 from .ryanair import make_request
 
 

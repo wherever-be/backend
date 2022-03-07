@@ -1,13 +1,14 @@
-from chalice import Chalice
-from chalicelib import Request
+from aiohttp import web
+from backend import Request
 
 
-app = Chalice(app_name="backend")
-
-
-@app.route("/", methods=["POST"], cors=True)
-def index():
-    request_data = app.current_request.json_body
+async def handler(request):
+    request_data = await request.json()
     request = Request.from_frontend_json(request_data)
     response = request.response
-    return response.frontend_json
+    return web.json_response(response.frontend_json)
+
+
+app = web.Application()
+app.add_routes([web.post("/", handler)])  # TODO: CORS
+web.run_app(app)

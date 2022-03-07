@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import cached_property, reduce
 from typing import Generator, List
 
-from chalicelib.geography import City
+from backend.geography import City
 from .journey import Journey
 
 

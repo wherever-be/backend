@@ -1,9 +1,9 @@
 from datetime import date, timedelta
 
-from chalicelib import Request
-from chalicelib.time_frame import TimeFrame
-from chalicelib.friend import Friend
-from chalicelib.scraper import world
+from backend import Request
+from backend.time_frame import TimeFrame
+from backend.friend import Friend
+from backend.scraper import world
 
 
 def test_from_frontend_json():

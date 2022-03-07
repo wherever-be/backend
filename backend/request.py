@@ -3,8 +3,8 @@ from datetime import timedelta
 from functools import cached_property
 from typing import List, Union
 
-from chalicelib.geography import City, Country
-from chalicelib.scraper import rough_connections, world
+from backend.geography import City, Country
+from backend.scraper import rough_connections, world
 from .friend import Friend
 from .journey import Journey
 from .response import Response

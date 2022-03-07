@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from chalicelib.geography import Airport
+from backend.geography import Airport
 from .price import Price
 
 

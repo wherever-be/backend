@@ -2,9 +2,9 @@ from cachetools import cached, TTLCache
 from datetime import date, datetime, timedelta
 from typing import Dict, List
 
-from chalicelib.connection import Connection
-from chalicelib.geography import Airport
-from chalicelib.price import Price
+from backend.connection import Connection
+from backend.geography import Airport
+from backend.price import Price
 from .ryanair import make_request
 
 
