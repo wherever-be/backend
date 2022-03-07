@@ -12,7 +12,7 @@ def _eur_rates():
     request = requests.get(
         "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
     )
-    soup = BeautifulSoup(request.text)
+    soup = BeautifulSoup(request.text, features="lxml")
     return {
         cube.attrs["currency"]: float(cube.attrs["rate"])
         for cube in soup.find_all("cube")
