@@ -3,7 +3,9 @@
   "app_name": "backend",
   "stages": {
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "api",
+      "lambda_timeout": 600,
+      "reserved_concurrency": 1
     }
   }
 }
