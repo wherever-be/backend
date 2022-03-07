@@ -8,19 +8,19 @@ from chalicelib.price import Price
 from .ryanair import make_request
 
 
-def rough_connection(
+def rough_connections(
     origin: Airport, destination: Airport, flight_date: date
-) -> Connection:
+) -> List[Connection]:
     """
-    Quickly get the cheapest connection on the given day, or None.
+    Quickly get the cheapest connections on the given day.
     Prices are sometimes a bit lower than actual.
     """
     try:
-        return _rough_connections_dict(origin=origin, destination=destination)[
-            flight_date
+        return [
+            _rough_connections_dict(origin=origin, destination=destination)[flight_date]
         ]
     except KeyError:
-        return None
+        return []
 
 
 @cached(cache=TTLCache(maxsize=250 * 250, ttl=12 * 60 * 60))

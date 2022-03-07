@@ -47,3 +47,8 @@ def test_simple_search():
     response = request.response
     assert len(response.trips) >= 1
     assert response.trips[0].destination.name == "Eindhoven"
+    assert response.trips[0].journeys[0].friend.name == "Jake"
+    assert response.trips[0].journeys[0].home_to_destination.from_airport.iata == "KRK"
+    assert response.trips[0].journeys[0].home_to_destination.to_airport.iata == "EIN"
+    assert response.trips[0].journeys[0].destination_to_home.from_airport.iata == "EIN"
+    assert response.trips[0].journeys[0].destination_to_home.to_airport.iata == "KRK"

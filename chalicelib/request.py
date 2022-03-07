@@ -4,7 +4,7 @@ from functools import cached_property
 from typing import List, Union
 
 from chalicelib.geography import City, Country
-from chalicelib.scraper import rough_connection, world
+from chalicelib.scraper import rough_connections, world
 from .friend import Friend
 from .journey import Journey
 from .response import Response
@@ -70,19 +70,21 @@ class Request:
         return [
             Journey(
                 friend=friend,
-                home_to_destination=rough_connection(
-                    origin=home_airport,
-                    destination=destination_airport,
-                    flight_date=trip_dates.start_date,
-                ),
-                destination_to_home=rough_connection(
-                    origin=destination_airport,
-                    destination=home_airport,
-                    flight_date=trip_dates.end_date,
-                ),
+                home_to_destination=home_to_destination,
+                destination_to_home=destination_to_home,
             )
             for home_airport in friend.city.airports
             for destination_airport in destination.airports
+            for home_to_destination in rough_connections(
+                origin=home_airport,
+                destination=destination_airport,
+                flight_date=trip_dates.start_date,
+            )
+            for destination_to_home in rough_connections(
+                origin=destination_airport,
+                destination=home_airport,
+                flight_date=trip_dates.end_date,
+            )
         ]
 
     @property
