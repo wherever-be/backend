@@ -38,11 +38,12 @@ def test_simple_search():
         friends=[
             Friend(
                 name="Jake",
-                city=world().city_by_code("STOCKHOLM"),
+                city=world().city_by_code("KRAKOW"),
             )
         ],
-        destination_country=world().country_by_code("it"),
-        destination_city=world().city_by_code("ROME"),
+        destination_country=world().country_by_code("nl"),
+        destination_city=world().city_by_code("EINDHOVEN"),
     )
     response = request.response
     assert len(response.trips) >= 1
+    assert response.trips[0].destination.name == "Eindhoven"
