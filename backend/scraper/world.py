@@ -1,11 +1,11 @@
-from cachetools import cached, TTLCache
-from typing import List
+from datetime import timedelta
 
+from backend.expiring_cache import expiring_cache
 from backend.geography import Airport, City, Country, World
 from .ryanair import make_request
 
 
-@cached(cache=TTLCache(maxsize=1, ttl=24 * 60 * 60))
+@expiring_cache(duration=timedelta(days=1))
 def world() -> World:
     response = make_request(
         "https://www.ryanair.com/api/locate/v1/autocomplete/airports",

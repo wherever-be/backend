@@ -1,13 +1,15 @@
 from bs4 import BeautifulSoup
-from cachetools import cached, TTLCache
+from datetime import timedelta
 import requests
+
+from backend.expiring_cache import expiring_cache
 
 
 def eur_rate(currency: str):
     return _eur_rates()[currency]
 
 
-@cached(cache=TTLCache(maxsize=1, ttl=1 * 60 * 60))
+@expiring_cache(duration=timedelta(hours=1))
 def _eur_rates():
     request = requests.get(
         "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"

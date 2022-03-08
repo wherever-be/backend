@@ -1,8 +1,8 @@
-from cachetools import cached, TTLCache
 from datetime import date, datetime, timedelta
 from typing import Dict, List
 
 from backend.connection import Connection
+from backend.expiring_cache import expiring_cache
 from backend.geography import Airport
 from backend.price import Price
 from .ryanair import make_request
@@ -23,7 +23,7 @@ def rough_connections(
         return []
 
 
-@cached(cache=TTLCache(maxsize=250 * 250, ttl=12 * 60 * 60))
+@expiring_cache(duration=timedelta(hours=12))
 def _rough_connections_dict(
     origin: Airport, destination: Airport
 ) -> Dict[date, Connection]:

@@ -1,14 +1,14 @@
-from cachetools import cached, TTLCache
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import List
 
 from backend.connection import Connection
+from backend.expiring_cache import expiring_cache
 from backend.geography import Airport
 from backend.price import Price
 from .ryanair import make_request, RyanairAPIError
 
 
-@cached(cache=TTLCache(maxsize=65536, ttl=24 * 60 * 60))
+@expiring_cache(duration=timedelta(hours=24))
 def precise_connections(
     num_people: int, flight_date: date, origin: Airport, destination: Airport
 ) -> List[Connection]:

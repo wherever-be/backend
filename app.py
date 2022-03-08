@@ -1,14 +1,18 @@
-from aiohttp import web
 from backend import Request
+from flask import Flask, request as flask_request
+from flask_cors import cross_origin
 
 
-async def handler(request):
-    request_data = await request.json()
+app = Flask(__name__)
+
+
+@app.route("/", methods=["POST"])
+@cross_origin()
+def handler():
+    request_data = flask_request.get_json()
     request = Request.from_frontend_json(request_data)
     response = request.response
-    return web.json_response(response.frontend_json)
+    return response.frontend_json
 
 
-app = web.Application()
-app.add_routes([web.post("/", handler)])  # TODO: CORS
-web.run_app(app)
+app.run()
