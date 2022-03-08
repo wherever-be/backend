@@ -1,0 +1,9 @@
+{
+  "destination": { "country": "it", "city": "ROME" },
+  "durationRange": { "min": 3, "max": 7 },
+  "friends": [
+    { "name": "Nick", "city": "STOCKHOLM" },
+    { "name": "Lucja", "city": "KRAKOW" }
+  ],
+  "timeFrame": { "start": "2022-03-09", "end": "2022-04-28" }
+}
