@@ -16,4 +16,4 @@ def handler():
 
 
 background_poll_loop()
-app.run()
+app.run(host="0.0.0.0", port=80, debug=False)
