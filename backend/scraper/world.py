@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from backend.expiring_cache import expiring_cache
+from backend.caching import expiring_cache
 from backend.geography import Airport, City, Country, World
 from .ryanair import make_request
 

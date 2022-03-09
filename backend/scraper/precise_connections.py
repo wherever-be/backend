@@ -1,8 +1,8 @@
 from datetime import date, datetime, timedelta
 from typing import List
 
+from backend.caching import expiring_cache
 from backend.connection import Connection
-from backend.expiring_cache import expiring_cache
 from backend.geography import Airport
 from backend.price import Price
 from .ryanair import make_request, RyanairAPIError

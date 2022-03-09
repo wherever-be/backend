@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 from datetime import timedelta
 import requests
 
-from backend.expiring_cache import expiring_cache
+from backend.caching import expiring_cache
 
 
 def eur_rate(currency: str):

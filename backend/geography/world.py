@@ -10,6 +10,16 @@ from .country import Country
 class World:
     countries: List[Country]
 
+    @property
+    def cities(self):
+        for country in self.countries:
+            yield from country.cities
+
+    @property
+    def airports(self):
+        for city in self.cities:
+            yield from city.airports
+
     def country_by_code(self, code: str):
         return next(country for country in self.countries if country.code == code)
 

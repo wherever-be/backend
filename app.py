@@ -1,4 +1,4 @@
-from backend import Request
+from backend import background_poll_loop, Request
 from flask import Flask, request as flask_request
 from flask_cors import cross_origin
 
@@ -15,4 +15,5 @@ def handler():
     return response.frontend_json
 
 
+background_poll_loop()
 app.run()

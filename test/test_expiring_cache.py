@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 import time
 
-from backend.expiring_cache import expiring_cache
+from backend.caching import expiring_cache
 
 
 def test_instant_retrieval():
