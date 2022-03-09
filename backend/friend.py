@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
+from backend.apis import world
 from backend.geography import City
-from backend.scraper import world
 
 
 @dataclass(frozen=True)

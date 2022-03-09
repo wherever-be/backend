@@ -4,9 +4,9 @@ import random
 from tqdm import tqdm
 from threading import Thread
 
+from backend.apis import world
 from backend.friend import Friend
 from backend.request import Request
-from backend.scraper import world
 from backend.time_frame import TimeFrame
 
 

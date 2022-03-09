@@ -1,6 +1,6 @@
 import pytest
 
-from backend.scraper.world import world
+from backend.apis import world
 
 
 def test_known_countries():

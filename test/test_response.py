@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from backend import Response
+from backend.apis import world
 from backend.connection import Connection
 from backend.friend import Friend
 from backend.journey import Journey
 from backend.price import Price
-from backend.scraper import world
 from backend.trip import Trip
 
 

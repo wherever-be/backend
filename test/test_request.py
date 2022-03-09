@@ -1,9 +1,9 @@
 from datetime import date, timedelta
 
 from backend import Request
+from backend.apis import world
 from backend.time_frame import TimeFrame
 from backend.friend import Friend
-from backend.scraper import world
 
 
 def test_from_frontend_json():

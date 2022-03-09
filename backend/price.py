@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.scraper import eur_rate
+from backend.apis import eur_rate
 
 
 @dataclass(frozen=True)
