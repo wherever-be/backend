@@ -5,6 +5,7 @@ from backend.caching import expiring_cache
 from backend.connection import Connection
 from backend.geography import Airport
 from backend.price import Price
+from .connected_airports import connected_airports
 from .ryanair import make_request
 
 
@@ -15,6 +16,8 @@ def rough_connections(
     Quickly get the cheapest connections on the given day.
     Prices are sometimes a bit lower than actual.
     """
+    if destination not in connected_airports(origin):
+        return []
     try:
         return [
             _rough_connections_dict(origin=origin, destination=destination)[flight_date]

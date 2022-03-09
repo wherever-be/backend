@@ -5,6 +5,7 @@ from backend.caching import expiring_cache
 from backend.connection import Connection
 from backend.geography import Airport
 from backend.price import Price
+from .connected_airports import connected_airports
 from .ryanair import make_request, RyanairAPIError
 
 
@@ -13,6 +14,8 @@ def precise_connections(
     num_people: int, flight_date: date, origin: Airport, destination: Airport
 ) -> List[Connection]:
     """All connections on a given day, with exact prices"""
+    if destination not in connected_airports(origin):
+        return []
     try:
         response = make_request(
             "https://www.ryanair.com/api/booking/v4/en-gb/availability",
