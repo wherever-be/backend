@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 from itertools import combinations
 import random
+from ratelimit import limits, RateLimitException
+from tenacity import retry, retry_if_exception_type, wait_fixed, wait_fixed
 from tqdm import tqdm
 from threading import Thread
 
@@ -21,6 +23,11 @@ def poll_loop():
         poll()
 
 
+@retry(
+    retry=retry_if_exception_type(RateLimitException),
+    wait=wait_fixed(60),
+)
+@limits(calls=1, period=60 * 60)
 def poll():
     cities = list(world().cities)
     city_pairs = list(combinations(cities, 2))
