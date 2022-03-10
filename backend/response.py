@@ -10,4 +10,8 @@ class Response:
 
     @property
     def frontend_json(self):
-        return {"searchResults": [trip.frontend_json for trip in self.trips]}
+        return {"searchResults": [trip.frontend_json for trip in self.good_trips]}
+
+    @property
+    def good_trips(self):
+        return sorted(self.trips, key=lambda trip: trip.goodness, reverse=True)
