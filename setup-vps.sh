@@ -7,7 +7,7 @@ sudo snap install core
 sudo snap refresh core
 sudo snap install --classic certbot
 sudo ln -s /snap/bin/certbot /usr/bin/certbot
-sudo certbot certonly --standalone
+sudo certbot certonly --standalone -d wherever.be,api.wherever.be
 
 sudo apt install python3-pip -y
 source ~/.bashrc
