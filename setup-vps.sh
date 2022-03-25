@@ -1,7 +1,7 @@
 #!/bin/sh
 sudo apt update
 sudo apt upgrade -y
-sudo hostname backend
+sudo hostname wherever-be
 
 sudo snap install core
 sudo snap refresh core
