@@ -1,19 +1,15 @@
 from dataclasses import dataclass
 from datetime import timedelta
-from functools import cached_property
 from typing import List, Union
 
-from backend.apis import rough_connections, world
+from backend.apis import world
 from backend.geography import City, Country
 from .friend import Friend
-from .journey import Journey
-from .response import Response
 from .time_frame import TimeFrame
-from .trip import Trip
 
 
 @dataclass(frozen=True)
-class Request:
+class Query:
     time_frame: TimeFrame
     min_days: int
     max_days: int
@@ -42,50 +38,6 @@ class Request:
                 else None
             ),
         )
-
-    @cached_property
-    def response(self):
-        return Response(trips=self.rough_trips)
-
-    @property
-    def rough_trips(self) -> List[Trip]:
-        return [
-            trip
-            for trip_dates in self.trip_dates
-            for destination in self.destination_cities
-            for trip in Trip.combine_journeys(
-                destination=destination,
-                journeys=[
-                    self.rough_journeys(
-                        friend=friend,
-                        trip_dates=trip_dates,
-                        destination=destination,
-                    )
-                    for friend in self.friends
-                ],
-            )
-        ]
-
-    def rough_journeys(self, friend: Friend, trip_dates: TimeFrame, destination: City):
-        return [
-            Journey(
-                friend=friend,
-                home_to_destination=home_to_destination,
-                destination_to_home=destination_to_home,
-            )
-            for home_airport in friend.city.airports
-            for destination_airport in destination.airports
-            for home_to_destination in rough_connections(
-                origin=home_airport,
-                destination=destination_airport,
-                flight_date=trip_dates.start_date,
-            )
-            for destination_to_home in rough_connections(
-                origin=destination_airport,
-                destination=home_airport,
-                flight_date=trip_dates.end_date,
-            )
-        ]
 
     @property
     def trip_dates(self):

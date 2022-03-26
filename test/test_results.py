@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from backend import Response
+from backend import Results
 from backend.apis import world
 from backend.connection import Connection
 from backend.friend import Friend
@@ -10,7 +10,7 @@ from backend.trip import Trip
 
 
 def test_to_frontend_json():
-    response = Response(
+    results = Results(
         trips=[
             Trip(
                 destination=world().city_by_code("ROME"),
@@ -36,7 +36,7 @@ def test_to_frontend_json():
             )
         ]
     )
-    trip = response.frontend_json["searchResults"][0]
+    trip = results.frontend_json["searchResults"][0]
     assert trip["destination"] == "ROME"
     journey = trip["journeys"][0]
     assert journey["friendName"] == "Josh"

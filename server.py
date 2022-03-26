@@ -1,4 +1,4 @@
-from backend import background_poll_loop, Request
+from backend import background_poll_loop, Query, search
 from flask import Flask, request as flask_request
 from flask_cors import cross_origin
 from flask_talisman import Talisman
@@ -13,6 +13,6 @@ background_poll_loop()
 @cross_origin()
 def handler():
     request_data = flask_request.get_json()
-    request = Request.from_frontend_json(request_data)
-    response = request.response
-    return response.frontend_json
+    query = Query.from_frontend_json(request_data)
+    results = search(query)
+    return results.frontend_json

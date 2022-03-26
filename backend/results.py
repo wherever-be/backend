@@ -5,7 +5,7 @@ from .trip import Trip
 
 
 @dataclass(frozen=True)
-class Response:
+class Results:
     trips: List[Trip]
 
     @property

@@ -8,7 +8,8 @@ from threading import Thread
 
 from backend.apis import world
 from backend.friend import Friend
-from backend.request import Request
+from backend.query import Query
+from backend.search import search
 from backend.time_frame import TimeFrame
 
 
@@ -38,7 +39,7 @@ def poll():
         end_date = start_date + timedelta(days=2 ** random.randint(3, 8))
         min_days = random.randint(2, 5)
         max_days = min_days + random.randint(1, 10)
-        request = Request(
+        query = Query(
             time_frame=TimeFrame(start_date=start_date, end_date=end_date),
             min_days=min_days,
             max_days=max_days,
@@ -48,4 +49,4 @@ def poll():
             ),
             destination_city=to_city,
         )
-        request.response
+        search(query)
