@@ -11,10 +11,29 @@ from .trip import Trip
 
 
 def search(query):
-    return Results(trips=rough_trips(query))
+    return Results(trips=limited_trips(query))
 
 
-def rough_trips(query: Query) -> List[Trip]:
+def limited_trips(query: Query, max_trips=64) -> List[Trip]:
+    """A list of trips, limited to a sensible number, picked based on goodnes and variety"""
+    results: List[Trip] = []
+
+    def variety_score(trip: Trip):
+        if len(results) == 0:
+            return trip.goodness
+        return trip.goodness - max(result.similarity(trip) for result in results)
+
+    candidates = rough_trips(query)
+    for _ in range(max_trips):
+        if len(candidates) == 0:
+            break
+        best_candidate = max(candidates, key=variety_score)
+        candidates.remove(best_candidate)
+        results.append(best_candidate)
+    return results
+
+
+def rough_trips(query: Query):
     return [
         trip
         for trip_dates in query.trip_dates

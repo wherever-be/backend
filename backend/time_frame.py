@@ -14,6 +14,9 @@ class TimeFrame:
             end_date=date.fromisoformat(json["end"]),
         )
 
+    def __len__(self):
+        return (self.end_date - self.start_date).days + 1
+
     def __iter__(self):
         current_date = self.start_date
         while True:
