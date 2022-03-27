@@ -7,6 +7,7 @@ from tqdm import tqdm
 from threading import Thread
 
 from backend.apis import world
+from backend.caching import all_caches
 from backend.friend import Friend
 from backend.query import Query
 from backend.search import search
@@ -14,14 +15,17 @@ from backend.time_frame import TimeFrame
 
 
 def background_poll_loop():
-    thread = Thread(target=poll_loop, name="polling thread", daemon=True)
+    thread = Thread(target=poll_loop, name="polling", daemon=True)
     thread.start()
     return thread
 
 
 def poll_loop():
+    all_caches.load_all()
     while True:
         poll()
+        all_caches.clean_all()
+        all_caches.save_all()
 
 
 @retry(
