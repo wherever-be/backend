@@ -64,17 +64,14 @@ class ExpiringCache:
     def save(self):
         with self.lock:
             self.path.parent.mkdir(parents=True, exist_ok=True)
+            save_dict = {}
+            for key, entry in self._dict.items():
+                with entry.lock:
+                    save_dict[key] = dict(
+                        last_updated=entry.last_updated, contents=entry.contents
+                    )
             with open(self.path, "wb") as file:
-                pickle.dump(
-                    {
-                        key: dict(
-                            last_updated=entry.last_updated, contents=entry.contents
-                        )
-                        for key, entry in self._dict.items()
-                        if entry.is_valid(duration=self.duration)
-                    },
-                    file,
-                )
+                pickle.dump(save_dict, file)
 
     def clean_(self):
         """Remove outdated entries"""
