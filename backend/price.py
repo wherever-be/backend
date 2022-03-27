@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from backend.apis import eur_rate
+from backend.apis import convert_currency
 
 
 @dataclass(frozen=True)
@@ -8,15 +8,19 @@ class Price:
     amount: float
     currency: str
 
-    @property
-    def in_euro(self) -> "Price":
-        if self.currency == "EUR":
+    def to_currency(self, currency: str) -> "Price":
+        if self.currency == currency:
             return self
-        return Price(amount=self.amount / eur_rate(self.currency), currency="EUR")
+        return Price(
+            amount=convert_currency(
+                self.amount, from_currency=self.currency, to_currency=currency
+            ),
+            currency=currency,
+        )
 
     @property
     def frontend_json(self):
-        in_euro = self.in_euro
+        in_euro = self.to_currency("EUR")
         return {"amount": in_euro.amount, "currency": in_euro.currency}
 
     def __add__(self, other: "Price") -> "Price":

@@ -23,7 +23,6 @@ class Journey:
 
     @property
     def total_price(self):
-        return (
-            self.home_to_destination.price.in_euro
-            + self.destination_to_home.price.in_euro
-        )
+        return self.home_to_destination.price.to_currency(
+            "EUR"
+        ) + self.destination_to_home.price.to_currency("EUR")
