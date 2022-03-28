@@ -25,7 +25,7 @@ class RyanairAPIError(Exception):
 
 
 def warn_on_exception(retry_state: RetryCallState):
-    print(f"{retry_state.fn.__name__} produced {retry_state.outcome.exception()}")
+    print(f"{retry_state.fn.__name__} produced {repr(retry_state.outcome.exception())}")
 
 
 @retry(
