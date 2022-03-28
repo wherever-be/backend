@@ -1,6 +1,6 @@
 from typing import List
 
-from backend.apis import rough_connections
+from backend.apis import rough_connections, precise_connections
 from backend.geography import City
 from .friend import Friend
 from .journey import Journey
@@ -10,27 +10,42 @@ from .time_frame import TimeFrame
 from .trip import Trip
 
 
-def search(query):
-    return Results(trips=limited_trips(query))
+def search(query, max_trips=64):
+    return Results(trips=precise_trips(query, max_trips=max_trips))
 
 
-def limited_trips(query: Query, max_trips=64) -> List[Trip]:
-    """A list of trips, limited to a sensible number, picked based on goodnes and variety"""
-    results: List[Trip] = []
-
-    def variety_score(trip: Trip):
-        if len(results) == 0:
-            return trip.goodness
-        return trip.goodness - max(result.similarity(trip) for result in results)
-
-    candidates = rough_trips(query)
-    for _ in range(max_trips):
-        if len(candidates) == 0:
-            break
-        best_candidate = max(candidates, key=variety_score)
-        candidates.remove(best_candidate)
-        results.append(best_candidate)
-    return results
+def precise_trips(query, max_trips: int):
+    base_trips = pick_varied(candidates=rough_trips(query), max_trips=max_trips * 2)
+    expanded = [
+        combined
+        for base_trip in base_trips
+        for combined in Trip.combine_journeys(
+            destination=base_trip.destination,
+            journeys=[
+                [
+                    Journey(
+                        friend=base_journey.friend,
+                        home_to_destination=home_to_destination,
+                        destination_to_home=destination_to_home,
+                    )
+                    for home_to_destination in precise_connections(
+                        num_people=1,  # TODO: group people
+                        flight_date=base_journey.home_to_destination.departure.date(),
+                        origin=base_journey.home_to_destination.from_airport,
+                        destination=base_journey.home_to_destination.to_airport,
+                    )
+                    for destination_to_home in precise_connections(
+                        num_people=1,  # TODO: group people
+                        flight_date=base_journey.destination_to_home.departure.date(),
+                        origin=base_journey.destination_to_home.from_airport,
+                        destination=base_journey.destination_to_home.to_airport,
+                    )
+                ]
+                for base_journey in base_trip.journeys
+            ],
+        )
+    ]
+    return pick_varied(candidates=expanded, max_trips=max_trips)
 
 
 def rough_trips(query: Query):
@@ -72,3 +87,21 @@ def rough_journeys(friend: Friend, trip_dates: TimeFrame, destination: City):
             flight_date=trip_dates.end_date,
         )
     ]
+
+
+def pick_varied(candidates: List[Trip], max_trips: int):
+    """A list of trips, limited to a sensible number, picked based on goodnes and variety"""
+    results: List[Trip] = []
+
+    def variety_score(trip: Trip):
+        if len(results) == 0:
+            return trip.goodness
+        return trip.goodness - max(result.similarity(trip) for result in results)
+
+    for _ in range(max_trips):
+        if len(candidates) == 0:
+            break
+        best_candidate = max(candidates, key=variety_score)
+        candidates.remove(best_candidate)
+        results.append(best_candidate)
+    return results

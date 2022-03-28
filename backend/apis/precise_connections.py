@@ -9,11 +9,29 @@ from .connected_airports import connected_airports
 from .ryanair import make_request, RyanairAPIError
 
 
-@expiring_cache(duration=timedelta(hours=24))
 def precise_connections(
     num_people: int, flight_date: date, origin: Airport, destination: Airport
+):
+    rounded_day = ((flight_date.day - 1) // 7) * 7 + 1
+    week_start = date(year=flight_date.year, month=flight_date.month, day=rounded_day)
+    weekly_connections = _precise_connections(
+        num_people=num_people,
+        start_date=week_start,
+        origin=origin,
+        destination=destination,
+    )
+    return [
+        connection
+        for connection in weekly_connections
+        if connection.departure.date() == flight_date
+    ]
+
+
+@expiring_cache(duration=timedelta(hours=12))
+def _precise_connections(
+    num_people: int, start_date: date, origin: Airport, destination: Airport
 ) -> List[Connection]:
-    """All connections on a given day, with exact prices"""
+    """All connections in the week starting on the given date, with exact prices"""
     if destination not in connected_airports(origin):
         return []
     try:
@@ -25,14 +43,14 @@ def precise_connections(
                 CHD=0,  # number of 2-11 year olds
                 INF=0,  # number of <2 year olds
                 DateIn="",  # empty for one-way
-                DateOut=flight_date.isoformat(),
+                DateOut=start_date.isoformat(),
                 Origin=origin.iata,
                 Destination=destination.iata,
                 Disc=0,  # no idea what this is
                 promoCode="",
                 IncludeConnectingFlights=False,
                 FlexDaysBeforeOut=0,
-                FlexDaysOut=0,  # TODO: this can be up to 6, then we get results for later dates as well
+                FlexDaysOut=6,
                 ToUs="AGREED",
             ),
         )
@@ -40,7 +58,6 @@ def precise_connections(
         if api_error.code == 404:
             return []  # no connecting flights
         raise api_error
-    flights = response["trips"][0]["dates"][0]["flights"]
     return [
         Connection(
             from_airport=origin,
@@ -52,5 +69,6 @@ def precise_connections(
                 currency=response["currency"],
             ),
         )
-        for flight in flights
+        for date_info in response["trips"][0]["dates"]
+        for flight in date_info["flights"]
     ]
