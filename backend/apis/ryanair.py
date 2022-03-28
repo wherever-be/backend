@@ -1,4 +1,4 @@
-from ratelimit import limits, RateLimitException
+from ratelimit import limits, sleep_and_retry
 import requests
 from tenacity import (
     retry,
@@ -43,11 +43,8 @@ def warn_on_exception(retry_state: RetryCallState):
     wait=wait_fixed(10),
     before_sleep=warn_on_exception,
 )
-@retry(
-    retry=retry_if_exception_type(RateLimitException),
-    wait=wait_fixed(1),
-)
-@limits(calls=1, period=1)
+@sleep_and_retry
+@limits(calls=10, period=1)
 def make_request(url: str, parameters):
     request = requests.get(url, params=parameters)
     if request.status_code == 429:

@@ -14,4 +14,4 @@ def test_rate_limit():
 
     start_time = time()
     poll_single(from_city=olsztyn, to_city=brno)
-    assert time() - start_time > 0.45
+    assert time() - start_time > 0.4
