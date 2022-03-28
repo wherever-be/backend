@@ -39,7 +39,7 @@ def poll_all():
 
 
 @sleep_and_retry
-@limits(calls=1, period=0.25)
+@limits(calls=1, period=0.5)
 def poll_single(from_city, to_city):
     start_date = date.today() + timedelta(days=2 ** random.randint(0, 4))
     end_date = start_date + timedelta(days=2 ** random.randint(3, 8))
