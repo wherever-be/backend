@@ -5,6 +5,8 @@ import pickle
 from threading import Lock
 from typing import Any, Callable, Dict
 
+from .dict_io import save_dict, load_dict
+
 
 @dataclass(frozen=False)
 class ExpiringCache:
@@ -12,17 +14,24 @@ class ExpiringCache:
     _dict: Dict[Any, "Entry"]
     duration: timedelta
     lock: Lock
+    chunk_size: int
 
     @property
     def path(self):
         import backend
 
         cache_path = Path(backend.__file__).parent.parent / "cache"
-        return cache_path / f"{self.function.__module__}:{self.function.__name__}.pkl"
+        return cache_path / f"{self.function.__module__}:{self.function.__name__}"
 
     @classmethod
-    def empty(cls, function: Callable, duration: timedelta):
-        return cls(function=function, _dict={}, duration=duration, lock=Lock())
+    def empty(cls, function: Callable, duration: timedelta, chunk_size: int):
+        return cls(
+            function=function,
+            _dict={},
+            duration=duration,
+            lock=Lock(),
+            chunk_size=chunk_size,
+        )
 
     def get_(self, args, kwargs):
         encoded_args = self.encode_args(args=args, kwargs=kwargs)
@@ -46,8 +55,7 @@ class ExpiringCache:
         with self.lock:
             if not self.path.exists():
                 return
-            with open(self.path, "rb") as file:
-                data = pickle.load(file)
+            data = load_dict(self.path)
             self._dict = {
                 key: entry
                 for key, datum in data.items()
@@ -63,15 +71,15 @@ class ExpiringCache:
 
     def save(self):
         with self.lock:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            save_dict = {}
+            as_dict = {}
             for key, entry in self._dict.items():
                 with entry.lock:
-                    save_dict[key] = dict(
+                    if not entry.populated:
+                        continue
+                    as_dict[key] = dict(
                         last_updated=entry.last_updated, contents=entry.contents
                     )
-            with open(self.path, "wb") as file:
-                pickle.dump(save_dict, file)
+            save_dict(as_dict, path=self.path, chunk_size=self.chunk_size)
 
     def clean_(self):
         """Remove outdated entries"""
