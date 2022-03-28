@@ -14,6 +14,10 @@ class TooManyRequestsError(Exception):
     pass
 
 
+class DownForMaintenanceError(Exception):
+    pass
+
+
 class RyanairAPIError(Exception):
     def __init__(self, code: int):
         super().__init__()
@@ -30,6 +34,16 @@ def warn_on_exception(retry_state: RetryCallState):
     before_sleep=warn_on_exception,
 )
 @retry(
+    retry=retry_if_exception_type(DownForMaintenanceError),
+    wait=wait_fixed(10),
+    before_sleep=warn_on_exception,
+)
+@retry(
+    retry=retry_if_exception_type(requests.ConnectionError),
+    wait=wait_fixed(10),
+    before_sleep=warn_on_exception,
+)
+@retry(
     retry=retry_if_exception_type(RateLimitException),
     wait=wait_fixed(1),
 )
@@ -40,4 +54,6 @@ def make_request(url: str, parameters):
         raise TooManyRequestsError()
     if request.status_code != 200:
         raise RyanairAPIError(request.status_code)
+    if "Our website is undergoing essential maintenance" in request.text:
+        raise DownForMaintenanceError()
     return request.json()
