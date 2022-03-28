@@ -36,7 +36,7 @@ def poll_loop():
 def poll():
     cities = list(world().cities)
     city_pairs = list(combinations(cities, 2))
-    loading_bar = tqdm(city_pairs, desc="Refreshing cache")
+    loading_bar = tqdm(city_pairs, desc="Refreshing cache", smoothing=0)
     for from_city, to_city in loading_bar:
         loading_bar.set_postfix_str(f"{from_city.name} => {to_city.name}")
         start_date = date.today() + timedelta(days=2 ** random.randint(0, 4))
