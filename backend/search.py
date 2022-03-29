@@ -15,7 +15,7 @@ def search(query, max_trips=64):
 
 
 def precise_trips(query, max_trips: int):
-    base_trips = pick_varied(candidates=rough_trips(query), max_trips=max_trips * 2)
+    base_trips = pick_varied(candidates=rough_trips(query), max_trips=max_trips)
     expanded = [
         combined
         for base_trip in base_trips

@@ -44,7 +44,7 @@ def warn_on_exception(retry_state: RetryCallState):
     before_sleep=warn_on_exception,
 )
 @sleep_and_retry
-@limits(calls=10, period=1)
+@limits(calls=1, period=1)
 def make_request(url: str, parameters):
     request = requests.get(url, params=parameters)
     if request.status_code == 429:
