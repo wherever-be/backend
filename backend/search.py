@@ -10,12 +10,12 @@ from .time_frame import TimeFrame
 from .trip import Trip
 
 
-def search(query, max_trips=64):
-    return Results(trips=precise_trips(query, max_trips=max_trips))
+def search(query):
+    return Results(trips=precise_trips(query))
 
 
-def precise_trips(query, max_trips: int):
-    base_trips = pick_varied(candidates=rough_trips(query), max_trips=max_trips)
+def precise_trips(query: Query):
+    base_trips = pick_varied(candidates=rough_trips(query), max_trips=query.max_trips)
     expanded = [
         combined
         for base_trip in base_trips
@@ -45,7 +45,7 @@ def precise_trips(query, max_trips: int):
             ],
         )
     ]
-    return pick_varied(candidates=expanded, max_trips=max_trips)
+    return pick_varied(candidates=expanded, max_trips=query.max_trips)
 
 
 def rough_trips(query: Query):

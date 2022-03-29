@@ -40,6 +40,10 @@ class Query:
         )
 
     @property
+    def max_trips(self):
+        return min(64, 32 + sum(1 for city in self.destination_cities))
+
+    @property
     def trip_dates(self):
         for start_date in self.time_frame:
             for duration_days in range(self.min_days, self.max_days + 1):
