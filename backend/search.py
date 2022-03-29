@@ -91,6 +91,7 @@ def rough_journeys(friend: Friend, trip_dates: TimeFrame, destination: City):
 
 def pick_varied(candidates: List[Trip], max_trips: int):
     """A list of trips, limited to a sensible number, picked based on goodnes and variety"""
+    remaining_candidates = [trip for trip in candidates]
     results: List[Trip] = []
 
     def variety_score(trip: Trip):
@@ -99,9 +100,9 @@ def pick_varied(candidates: List[Trip], max_trips: int):
         return trip.goodness - max(result.similarity(trip) for result in results)
 
     for _ in range(max_trips):
-        if len(candidates) == 0:
+        if len(remaining_candidates) == 0:
             break
-        best_candidate = max(candidates, key=variety_score)
-        candidates.remove(best_candidate)
+        best_candidate = max(remaining_candidates, key=variety_score)
+        remaining_candidates.remove(best_candidate)
         results.append(best_candidate)
     return results
