@@ -71,4 +71,5 @@ def _precise_connections(
         )
         for date_info in response["trips"][0]["dates"]
         for flight in date_info["flights"]
+        if flight["faresLeft"] == -1 or flight["faresLeft"] >= num_people
     ]
