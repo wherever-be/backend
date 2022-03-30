@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-from backend.apis import precise_connections
+from backend.apis.ryanair import precise_connections
 from backend.geography import Airport
 
 

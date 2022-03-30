@@ -1,6 +1,6 @@
 import pytest
 
-from backend.apis import world
+from backend.apis.ryanair import world
 
 
 def test_known_countries():

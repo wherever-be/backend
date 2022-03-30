@@ -6,7 +6,7 @@ from backend.connection import Connection
 from backend.geography import Airport
 from backend.price import Price
 from .connected_airports import connected_airports
-from .ryanair import make_request
+from .make_request import make_request
 
 
 def rough_connections(

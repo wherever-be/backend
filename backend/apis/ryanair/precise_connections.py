@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from tenacity import retry, retry_if_exception, wait_exponential
 from typing import List
 
 from backend.caching import expiring_cache
@@ -6,7 +7,8 @@ from backend.connection import Connection
 from backend.geography import Airport
 from backend.price import Price
 from .connected_airports import connected_airports
-from .ryanair import make_request, RyanairAPIError
+from .errors import RyanairAPIError
+from .make_request import make_request
 
 
 def precise_connections(
@@ -27,37 +29,39 @@ def precise_connections(
     ]
 
 
-@expiring_cache(duration=timedelta(hours=12))
+@expiring_cache(duration=timedelta(hours=6))
+@retry(
+    retry=retry_if_exception(
+        lambda exception: isinstance(exception, RyanairAPIError)
+        and exception.code == 404  # mr Ryan put us on his naughty list
+    ),
+    wait=wait_exponential(),
+)
 def _precise_connections(
     num_people: int, start_date: date, origin: Airport, destination: Airport
 ) -> List[Connection]:
     """All connections in the week starting on the given date, with exact prices"""
     if destination not in connected_airports(origin):
         return []
-    try:
-        response = make_request(
-            "https://www.ryanair.com/api/booking/v4/en-gb/availability",
-            parameters=dict(
-                ADT=num_people,  # number of adults
-                TEEN=0,  # number of 12-15 year olds
-                CHD=0,  # number of 2-11 year olds
-                INF=0,  # number of <2 year olds
-                DateIn="",  # empty for one-way
-                DateOut=start_date.isoformat(),
-                Origin=origin.iata,
-                Destination=destination.iata,
-                Disc=0,  # no idea what this is
-                promoCode="",
-                IncludeConnectingFlights=False,
-                FlexDaysBeforeOut=0,
-                FlexDaysOut=6,
-                ToUs="AGREED",
-            ),
-        )
-    except RyanairAPIError as api_error:
-        if api_error.code == 404:
-            return []  # no connecting flights
-        raise api_error
+    response = make_request(
+        "https://www.ryanair.com/api/booking/v4/en-gb/availability",
+        parameters=dict(
+            ADT=num_people,  # number of adults
+            TEEN=0,  # number of 12-15 year olds
+            CHD=0,  # number of 2-11 year olds
+            INF=0,  # number of <2 year olds
+            DateIn="",  # empty for one-way
+            DateOut=start_date.isoformat(),
+            Origin=origin.iata,
+            Destination=destination.iata,
+            Disc=0,  # no idea what this is
+            promoCode="",
+            IncludeConnectingFlights=False,
+            FlexDaysBeforeOut=0,
+            FlexDaysOut=6,
+            ToUs="AGREED",
+        ),
+    )
     return [
         Connection(
             from_airport=origin,

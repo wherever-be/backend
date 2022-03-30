@@ -1,4 +1,4 @@
-from backend.apis import connected_airports, world
+from backend.apis.ryanair import connected_airports, world
 
 
 def test_malmo():

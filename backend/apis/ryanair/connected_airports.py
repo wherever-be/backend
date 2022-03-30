@@ -4,7 +4,7 @@ from typing import List
 from backend.caching import expiring_cache
 from backend.geography import Airport
 from .world import world
-from .ryanair import make_request
+from .make_request import make_request
 
 
 @expiring_cache(duration=timedelta(hours=24))
