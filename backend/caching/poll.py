@@ -9,7 +9,7 @@ from backend.apis import world
 from backend.caching import all_caches
 from backend.friend import Friend
 from backend.query import Query
-from backend.search import search
+from backend.search import rough_trips
 from backend.time_frame import TimeFrame
 
 
@@ -55,4 +55,4 @@ def poll_single(from_city, to_city):
         ),
         destination_city=to_city,
     )
-    search(query)
+    rough_trips(query)
