@@ -41,7 +41,7 @@ class Query:
 
     @property
     def max_trips(self):
-        return min(64, 16 * sum(1 for city in self.destination_cities) ** 0.5)
+        return min(64, int(16 * sum(1 for city in self.destination_cities) ** 0.5))
 
     @property
     def trip_dates(self):
