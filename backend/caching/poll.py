@@ -55,4 +55,4 @@ def poll_single(from_city, to_city):
         ),
         destination_city=to_city,
     )
-    rough_trips(query)
+    rough_trips(query, max_trips=16)

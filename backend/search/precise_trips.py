@@ -6,10 +6,10 @@ from .pick_varied import pick_varied
 from .rough_trips import rough_trips
 
 
-def precise_trips(query: Query):
+def precise_trips(query: Query, max_trips: int):
     expanded = [
         combined
-        for rough_trip in rough_trips(query)
+        for rough_trip in rough_trips(query, max_trips=max_trips)
         for combined in Trip.combine_journeys(
             destination=rough_trip.destination,
             journeys=[
@@ -17,7 +17,7 @@ def precise_trips(query: Query):
             ],
         )
     ]
-    return pick_varied(candidates=expanded, max_trips=query.max_trips)
+    return pick_varied(candidates=expanded, max_trips=max_trips)
 
 
 def precise_journeys(rough_journey: Journey):

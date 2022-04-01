@@ -3,4 +3,4 @@ from .precise_trips import precise_trips
 
 
 def search(query):
-    return Results(trips=precise_trips(query))
+    return Results(trips=precise_trips(query, max_trips=16))

@@ -8,7 +8,7 @@ from backend.trip import Trip
 from .pick_varied import pick_varied
 
 
-def rough_trips(query: Query):
+def rough_trips(query: Query, max_trips: int):
     candidates = [
         trip
         for trip_dates in query.trip_dates
@@ -25,7 +25,7 @@ def rough_trips(query: Query):
             ],
         )
     ]
-    return pick_varied(candidates, max_trips=query.max_trips)
+    return pick_varied(candidates, max_trips=max_trips)
 
 
 def rough_journeys(friend: Friend, trip_dates: TimeFrame, destination: City):
