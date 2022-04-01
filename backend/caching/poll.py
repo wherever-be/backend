@@ -9,7 +9,7 @@ from backend.apis import world
 from backend.caching import all_caches
 from backend.friend import Friend
 from backend.query import Query
-from backend.search import rough_trips
+from backend.search.rough_trips import rough_trips
 from backend.time_frame import TimeFrame
 
 
