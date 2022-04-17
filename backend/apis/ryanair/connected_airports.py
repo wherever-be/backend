@@ -1,4 +1,3 @@
-from datetime import timedelta
 from typing import List
 
 from backend.caching import expiring_cache
@@ -7,7 +6,7 @@ from .world import world
 from .make_request import make_request
 
 
-@expiring_cache(duration=timedelta(hours=24))
+@expiring_cache()
 def connected_airports(origin: Airport) -> List[Airport]:
     response = make_request(
         "https://www.ryanair.com/api/locate/v1/autocomplete/routes",

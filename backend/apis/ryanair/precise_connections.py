@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from ratelimit import limits, sleep_and_retry
 from typing import List
 
@@ -29,7 +29,7 @@ def precise_connections(
     ]
 
 
-@expiring_cache(duration=timedelta(hours=6))
+@expiring_cache()
 def _precise_connections(
     num_people: int, start_date: date, origin: Airport, destination: Airport
 ):

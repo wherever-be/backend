@@ -26,7 +26,7 @@ def rough_connections(
         return []
 
 
-@expiring_cache(duration=timedelta(hours=12))
+@expiring_cache()
 def _rough_connections_dict(
     origin: Airport, destination: Airport
 ) -> Dict[date, Connection]:

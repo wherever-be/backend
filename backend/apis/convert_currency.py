@@ -1,4 +1,3 @@
-from datetime import timedelta
 import requests
 import json
 
@@ -9,7 +8,7 @@ def convert_currency(amount: float, from_currency: str, to_currency: str):
     return amount * _pln_rates()[from_currency] / _pln_rates()[to_currency]
 
 
-@expiring_cache(duration=timedelta(hours=1))
+@expiring_cache()
 def _pln_rates():
     return {
         "PLN": 1,

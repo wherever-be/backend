@@ -6,7 +6,7 @@ from tqdm import tqdm
 from threading import Thread
 
 from backend.apis import world
-from backend.caching import all_caches
+from backend.caching import all_caches, ExpiringCache
 from backend.friend import Friend
 from backend.query import Query
 from backend.search.rough_trips import rough_trips
@@ -22,7 +22,8 @@ def background_poll_loop():
 def poll_loop():
     all_caches.load_all()
     while True:
-        poll_all()
+        with ExpiringCache.duration(timedelta(hours=1)):
+            poll_all()
         all_caches.clean_all()
         all_caches.save_all()
 

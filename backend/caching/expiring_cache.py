@@ -1,7 +1,8 @@
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-import pickle
 from threading import Lock
 from typing import Any, Callable, Dict
 
@@ -12,7 +13,6 @@ from .dict_io import save_dict, load_dict
 class ExpiringCache:
     function: Callable
     _dict: Dict[Any, "Entry"]
-    duration: timedelta
     lock: Lock
     chunk_size: int
 
@@ -24,14 +24,21 @@ class ExpiringCache:
         return cache_path / f"{self.function.__module__}:{self.function.__name__}"
 
     @classmethod
-    def empty(cls, function: Callable, duration: timedelta, chunk_size: int):
+    def empty(cls, function: Callable, chunk_size: int):
         return cls(
             function=function,
             _dict={},
-            duration=duration,
             lock=Lock(),
             chunk_size=chunk_size,
         )
+
+    @classmethod
+    @contextmanager
+    def duration(cls, duration: timedelta):
+        old_duration = cache_duration.get()
+        cache_duration.set(duration)
+        yield
+        cache_duration.set(old_duration)
 
     def get_(self, args, kwargs):
         encoded_args = self.encode_args(args=args, kwargs=kwargs)
@@ -40,7 +47,7 @@ class ExpiringCache:
                 self._dict[encoded_args] = ExpiringCache.Entry.empty()
             entry = self._dict[encoded_args]
         with entry.lock:
-            if entry.is_valid(self.duration):
+            if entry.is_valid:
                 return entry.contents
             result = self.function(*args, **kwargs)
         self.set_(args=args, kwargs=kwargs, value=result)
@@ -66,7 +73,7 @@ class ExpiringCache:
                         contents=datum["contents"],
                         populated=True,
                     )
-                ).is_valid(duration=self.duration)
+                ).is_valid
             }
 
     def save(self):
@@ -85,9 +92,7 @@ class ExpiringCache:
         """Remove outdated entries"""
         with self.lock:
             self._dict = {
-                key: entry
-                for key, entry in self._dict.items()
-                if entry.is_valid(self.duration)
+                key: entry for key, entry in self._dict.items() if entry.is_valid
             }
 
     @staticmethod
@@ -101,18 +106,25 @@ class ExpiringCache:
         contents: Any
         populated: bool
 
+        @property
+        def is_valid(self):
+            if self.populated:
+                if cache_duration.get() is None:
+                    return True
+                if datetime.now() < self.last_updated + cache_duration.get():
+                    return True
+            return False
+
         @classmethod
         def empty(cls):
             return cls(
                 lock=Lock(), last_updated=datetime.now(), contents=None, populated=False
             )
 
-        def is_valid(self, duration: timedelta):
-            if self.populated:
-                if datetime.now() < self.last_updated + duration:
-                    return True
-
         def update_(self, contents):
             self.last_updated = datetime.now()
             self.contents = contents
             self.populated = True
+
+
+cache_duration: ContextVar[timedelta] = ContextVar("cache_duration", default=None)

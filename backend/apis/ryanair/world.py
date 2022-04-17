@@ -1,11 +1,9 @@
-from datetime import timedelta
-
 from backend.caching import expiring_cache
 from backend.geography import Airport, City, Country, World
 from .make_request import make_request
 
 
-@expiring_cache(duration=timedelta(days=1))
+@expiring_cache()
 def world() -> World:
     response = make_request(
         "https://www.ryanair.com/api/locate/v1/autocomplete/airports",
